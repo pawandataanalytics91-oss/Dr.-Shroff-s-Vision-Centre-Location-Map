@@ -24,10 +24,9 @@ input{width:100%;padding:8px}
 
 <div class="legend" style="position:absolute;z-index:1000;bottom:10px;left:10px;background:#fff;padding:10px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.2)">
 <b>Color Code</b><br>
-<span style="color:red">●</span>Munger<br>
-<span style="color:blue">●</span> Vision Centre
+<span style="color:#ff1493">●</span> Munger<br>
+<span style="color:#3498db">●</span> Vision Centre<br>
 </div>
-
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
@@ -41,7 +40,7 @@ const regionColors={
 'Meerut':'#9b59b6',
 'Modi Nagar':'#8e44ad',
 'Alwar':'#1abc9c',
-'Karol Bagh':'#d35400'
+'Karol Bagh':'#d35400',
 'Munger':'#ff1493'
 };
 
@@ -53,6 +52,8 @@ function getRegionColor(ngo){
  if(ngo.includes('Modi Nagar')) return regionColors['Modi Nagar'];
  if(ngo.includes('Alwar')) return regionColors['Alwar'];
  if(ngo.includes('Karol Bagh')) return regionColors['Karol Bagh'];
+ if(ngo.includes('Munger')) return regionColors['Munger'];
+
  return regionColors['Delhi'];
 }
 
