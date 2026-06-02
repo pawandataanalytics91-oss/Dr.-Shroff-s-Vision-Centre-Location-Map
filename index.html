@@ -76,26 +76,28 @@ const hospitalIconOptions={radius:14,color:'#8B0000',weight:3,fillColor:'#FF0000
 
 const cluster=L.layerGroup();
 const markers=[];
+
 data.forEach(p=>{
- let m=L.marker([p.lat,p.lon],{icon:vcIcon}).bindPopup(
- `<h4>${p.name}</h4>
- <b>NGO:</b> ${p.ngo}<br>
- <b>Address:</b> ${p.address}<br>
- <b>Phone:</b> ${p.phone}<br>
- <b>Lat/Lon:</b> ${p.lat}, ${p.lon}`
- );
- m.vc=(p.name||'').toLowerCase();
- markers.push(m);
- cluster.addLayer(m);
+  let m=L.marker([p.lat,p.lon],{icon:vcIcon}).bindPopup(
+  `<h4>${p.name}</h4>
+  <b>NGO:</b> ${p.ngo}<br>
+  <b>Address:</b> ${p.address}<br>
+  <b>Phone:</b> ${p.phone}<br>
+  <b>Lat/Lon:</b> ${p.lat}, ${p.lon}`
+  );
+
+  m.vc=(p.name||'').toLowerCase();
+  markers.push(m);
+  cluster.addLayer(m);
 });
 
 hospitals.forEach(h=>{
- L.marker([h.lat,h.lon],{icon:hospitalIcon})
-  .bindPopup(`<h4>${h.name}</h4><b>${h.type}</b><br>${h.location}`)
-  .addTo(map);
+  L.marker([h.lat,h.lon],{icon:hospitalIcon})
+   .bindPopup(`<h4>${h.name}</h4><b>${h.type}</b><br>${h.location}`)
+   .addTo(map);
 });
-map.addLayer(cluster);
 
+map.addLayer(cluster);
 
 function fitAll(){
  const g=L.featureGroup(markers);
