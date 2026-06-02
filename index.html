@@ -80,7 +80,7 @@ const markers=[];
 data.forEach(p=>{
   let m=L.marker([p.lat,p.lon],{icon:vcIcon}).bindPopup(
   `<h4>${p.name}</h4>
-  <b>NGO:</b> ${p.ngo}<br>
+  <b>Organisation:</b> ${p.ngo}<br>
   <b>Address:</b> ${p.address}<br>
   <b>Phone:</b> ${p.phone}<br>
   <b>Lat/Lon:</b> ${p.lat}, ${p.lon}`
