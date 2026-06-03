@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
     li.onclick = () => { map.flyTo([v.la, v.lo], 14); markers[idx].openPopup(); };
     list.appendChild(li);
     const m = L.marker([v.la, v.lo], { icon: pIcon }).addTo(map);
-    m.bindPopup(`<b style="color:#0056b3">${v.n}</b><br>🔵 Primary VC<br>📍 ${v.r}<br>${v.a}<br>📞 ${v.p}`);
+    m.bindPopup(`<b style="color:#0056b3">${v.n}</b><br>🔵 Vision Centre<br>📍 ${v.r}<br>${v.a}<br>📞 ${v.p}`);
     markers.push(m);
   });
 
