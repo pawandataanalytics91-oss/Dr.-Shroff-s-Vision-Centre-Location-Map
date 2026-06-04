@@ -82,7 +82,7 @@ const l=document.getElementById('vcList'),mkrs=[];
 H.forEach((h,i)=>{
 const ic=h[1]==='tertiary'?tI:sI,tl=h[1]==='tertiary'?'Tertiary':'Secondary';
 const li=document.createElement('li');li.className=h[1];
-li.innerHTML=`<span class="vc-name">${v[0]}</span><span class="vc-details">📍 ${v[1]}<br>${v[4]}</span><span class="vc-phone"> ${v[5]}</span>`;
+li.innerHTML=`<span class="vc-name">${v[0]}</span><span class="vc-details"> ${v[1]}</span><span class="vc-phone">📞 ${v[5]}</span>`;
 li.onclick=()=>{m.flyTo([h[3],h[4]],14);mkrs[i].openPopup()};l.appendChild(li);
 const mr=L.marker([h[3],h[4]],{icon:ic}).addTo(m);
 mr.bindPopup(`<b style="color:${h[1]==='tertiary'?'#800080':'#8b0000'}">${h[0]}</b><br>${tl} Hospital<br>📍 ${h[2]}<br>${h[5]}<br>📞 ${h[6]}`);
@@ -94,7 +94,7 @@ const li=document.createElement('li');li.className='primary';
 li.innerHTML=`<span class="vc-name">${v[0]}</span><span class="vc-details">📍 ${v[1]}</span><span class="vc-phone">📞 ${v[5]}</span>`;
 li.onclick=()=>{m.flyTo([v[2],v[3]],14);mkrs[idx].openPopup()};l.appendChild(li);
 const mr=L.marker([v[2],v[3]],{icon:pI}).addTo(m);
-mr.bindPopup(`<div style="min-width:200px"><b style="color:#0056b3;font-size:1.1em">${v[0]}</b><br><strong>🔵 Vision Centre</strong><br><br>📍 <strong>Region:</strong> ${v[1]}<br><br>📋 <strong>Address:</strong><br>${v[4]}<br><br>📞 <strong>Phone:</strong> ${v[5]}</div>`);
+mr.bindPopup(`<b style="color:#0056b3">${v[0]}</b><br>Vision Centre<br>📍 ${v[1]}<br>${v[4]}<br>📞 ${v[5]}`);
 mkrs.push(mr);
 });const s=document.getElementById('searchBox'),its=l.querySelectorAll('li');
 s.oninput=e=>{
