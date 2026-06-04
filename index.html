@@ -82,7 +82,7 @@ const l=document.getElementById('vcList'),mkrs=[];
 H.forEach((h,i)=>{
 const ic=h[1]==='tertiary'?tI:sI,tl=h[1]==='tertiary'?'Tertiary':'Secondary';
 const li=document.createElement('li');li.className=h[1];
-li.innerHTML=`<span class="vc-name">${v[0]}</span><span class="vc-details"> ${v[1]}</span><span class="vc-phone">📞 ${v[5]}</span>`;
+li.innerHTML=`<span class="vc-name">${h[0]}</span><span class="vc-details">📍 ${h[2]} | ${tl} Hospital</span><span class="vc-phone">📞 ${h[6]}</span>`;
 li.onclick=()=>{m.flyTo([h[3],h[4]],14);mkrs[i].openPopup()};l.appendChild(li);
 const mr=L.marker([h[3],h[4]],{icon:ic}).addTo(m);
 mr.bindPopup(`<b style="color:${h[1]==='tertiary'?'#800080':'#8b0000'}">${h[0]}</b><br>${tl} Hospital<br>📍 ${h[2]}<br>${h[5]}<br>📞 ${h[6]}`);
