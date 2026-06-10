@@ -3,114 +3,171 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dr. Shroff's Charity Eye Hospital - Vision Centres GIS Dashboard</title>
+<title>Dr. Shroff's Charity Eye Hospital-GIS Dashboard</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif}
-body{background:#f4f7f6;color:#333;padding:15px}
-header{background:#0056b3;color:#fff;padding:15px;border-radius:8px;margin-bottom:15px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
-header h1{font-size:1.3rem}
-.stats span{margin-left:15px;font-size:1rem}
-.controls{display:flex;gap:10px;margin-bottom:15px}
-#searchBox{flex:1;padding:10px;border:1px solid #ccc;border-radius:4px}
-#showAllBtn{padding:10px 15px;background:#28a745;color:#fff;border:none;border-radius:4px;cursor:pointer}
-#showAllBtn:hover{background:#218838}
+body{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:15px}
+.container{max-width:1600px;margin:0 auto}
+header{background:linear-gradient(135deg,#1e3c72,#2a5298);color:#fff;padding:20px;border-radius:12px;margin-bottom:15px;box-shadow:0 8px 25px rgba(0,0,0,0.3);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+header h1{font-size:1.4rem;text-shadow:2px 2px 4px rgba(0,0,0,0.3)}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:15px}
+.stat-card{background:#fff;padding:18px;border-radius:10px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,0.15);cursor:pointer}
+.stat-card:hover{transform:translateY(-3px);box-shadow:0 10px 25px rgba(0,0,0,0.2)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
+.stat-card.total::before{background:linear-gradient(90deg,#667eea,#764ba2)}
+.stat-card.tertiary::before{background:linear-gradient(90deg,#800080,#a020f0)}
+.stat-card.secondary::before{background:linear-gradient(90deg,#8b0000,#dc143c)}
+.stat-card.primary::before{background:linear-gradient(90deg,#0056b3,#0088ff)}
+.stat-card h3{font-size:2.2rem;font-weight:700;margin-bottom:4px;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-card p{font-size:0.85rem;color:#666;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+.controls{display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap}
+#searchBox,#regionFilter{flex:1;padding:10px;border:2px solid #fff;border-radius:8px;font-size:0.95rem;background:#fff;box-shadow:0 3px 8px rgba(0,0,0,0.1)}
+#searchBox:focus,#regionFilter:focus{outline:none;border-color:#667eea}
+#showAllBtn{padding:10px 20px;background:linear-gradient(135deg,#28a745,#20c997);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600}
+#showAllBtn:hover{background:linear-gradient(135deg,#20c997,#28a745)}
 .content-wrapper{display:flex;gap:15px;flex-wrap:wrap}
-.sidebar{flex:1;min-width:280px;max-width:380px;display:flex;flex-direction:column;gap:10px;max-height:650px}
-.region-list,.legend{background:#fff;padding:12px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,.1)}
+.sidebar{flex:1;min-width:300px;max-width:400px;display:flex;flex-direction:column;gap:12px;max-height:700px}
+.panel{background:#fff;padding:15px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.15)}
+.panel h3{color:#1e3c72;font-size:1rem;margin-bottom:10px;padding-bottom:6px;border-bottom:3px solid #667eea}
 .region-list{flex:1;overflow:hidden;display:flex;flex-direction:column}
-.region-list h3,.legend h3{margin-bottom:8px;color:#0056b3;border-bottom:2px solid #eee;padding-bottom:5px;font-size:1rem}
-.region-list ul{list-style:none;overflow-y:auto;flex:1;padding-right:5px}
+.region-list ul{list-style:none;overflow-y:auto;flex:1;max-height:400px;padding-right:5px}
 .region-list ul::-webkit-scrollbar{width:6px}
-.region-list ul::-webkit-scrollbar-thumb{background:#ccc;border-radius:4px}
-.region-list li{padding:8px;border-bottom:1px solid #eee;cursor:pointer;font-size:.85rem;transition:.2s}
-.region-list li:hover{background:#f0f8ff}
-.vc-name{font-weight:700;display:block;margin-bottom:2px}
-.vc-details{font-size:.75rem;color:#666;display:block}
-.vc-phone{font-size:.75rem;color:#28a745;display:block}
-.tertiary{border-left:4px solid #800080;background:#faf5ff}
-.tertiary .vc-name{color:#800080}
-.secondary{border-left:4px solid #8b0000;background:#fff5f5}
-.secondary .vc-name{color:#8b0000}
-.primary{border-left:4px solid #0056b3}
-.legend-item{display:flex;align-items:center;margin-bottom:6px;font-size:.9rem}
-.legend-dot{width:16px;height:16px;border-radius:50%;margin-right:8px;display:inline-block;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.3)}
-.dot-tertiary{background:#800080;width:20px;height:20px}
-.dot-secondary{background:#8b0000;width:18px;height:18px}
-.dot-primary{background:#0056b3}
-.custom-marker{background:transparent!important;border:none!important;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}
-#map{flex:2;min-width:300px;height:650px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,.1);z-index:1;background:#ddd}
-@media(max-width:768px){.content-wrapper{flex-direction:column}.sidebar{max-width:100%;max-height:300px}#map{height:450px}}
+.region-list ul::-webkit-scrollbar-thumb{background:#667eea;border-radius:3px}
+.region-list li{padding:10px;margin-bottom:6px;border-radius:6px;cursor:pointer;border-left:4px solid transparent;background:#f8f9fa;font-size:0.85rem}
+.region-list li:hover{background:#e9ecef;transform:translateX(3px)}
+.region-list li.tertiary{border-left-color:#800080;background:#faf5ff}
+.region-list li.secondary{border-left-color:#8b0000;background:#fff5f5}
+.region-list li.primary{border-left-color:#0056b3;background:#f0f8ff}
+.vc-name{font-weight:700;display:block;margin-bottom:3px;font-size:0.9rem;color:#1e3c72}
+.vc-details{font-size:0.75rem;color:#666;display:block}
+.vc-phone{font-size:0.75rem;color:#28a745;font-weight:600;display:block;margin-top:2px}
+.chart-container{max-height:250px;overflow-y:auto}
+.chart-bar{display:flex;align-items:center;margin-bottom:8px;font-size:0.8rem}
+.chart-label{width:100px;font-weight:600;color:#333;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chart-track{flex:1;background:#e9ecef;height:16px;border-radius:8px;overflow:hidden;margin:0 8px}
+.chart-fill{height:100%;background:linear-gradient(90deg,#667eea,#764ba2);border-radius:8px;display:flex;align-items:center;justify-content:flex-end;padding-right:4px;color:#fff;font-weight:700;font-size:0.7rem}
+.cm{background:transparent!important;border:none!important;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.4))}#map{flex:2;min-width:330px;height:700px;border-radius:10px;box-shadow:0 8px 25px rgba(0,0,0,0.3);z-index:1;background:#fff}
+.leaflet-popup-content-wrapper{border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+.leaflet-popup-content{margin:10px;font-size:0.85rem;line-height:1.4;max-width:250px}
+.popup-title{font-size:0.95rem;font-weight:700;margin-bottom:5px;padding-bottom:4px;border-bottom:2px solid #667eea}
+.popup-info{margin:4px 0}
+.popup-label{font-weight:600;color:#667eea;font-size:0.75rem}
+.popup-link{display:inline-block;margin-top:5px;padding:4px 8px;background:#28a745;color:#fff;text-decoration:none;border-radius:4px;font-size:0.75rem;font-weight:600}
+@media(max-width:768px){
+.content-wrapper{flex-direction:column}
+#map{height:45vh;min-height:350px;order:1;margin-bottom:10px}
+.sidebar{max-width:100%;max-height:none;order:2}
+.stat-card h3{font-size:1.5rem}
+header h1{font-size:1rem}
+.controls{flex-direction:column}
+#searchBox,#regionFilter,#showAllBtn{width:100%}
+.region-list ul{max-height:300px}
+.chart-label{width:80px;font-size:0.7rem}
+}
+@media(max-width:480px){
+.stats-grid{grid-template-columns:repeat(2,1fr)}
+.stat-card{padding:12px}
+.stat-card h3{font-size:1.3rem}
+.stat-card p{font-size:0.7rem}
+#map{height:40vh;min-height:300px}
+.panel{padding:10px}
+}
 </style>
 </head>
 <body>
+<div class="container">
 <header>
-<h1>🏥 Dr. Shroff's Charity Eye Hospital - Vision Centres GIS</h1>
-<div class="stats"><span>Total: <strong id="totalCount">124</strong></span><span>Coverage: <strong>India</strong></span></div>
-</header><main>
+<h1>🏥 Dr. Shroff's Charity Eye Hospital - Advanced GIS Dashboard</h1>
+<span style="font-size:0.9rem;font-weight:600">Coverage: India 🇮🇳</span>
+</header>
+<div class="stats-grid">
+<div class="stat-card total"><h3 id="sTotal">0</h3><p>Total Locations</p></div>
+<div class="stat-card tertiary"><h3 id="sTer">0</h3><p>Tertiary Hospital</p></div>
+<div class="stat-card secondary"><h3 id="sSec">0</h3><p>Secondary Hospitals</p></div>
+<div class="stat-card primary"><h3 id="sPri">0</h3><p>Vision Centres</p></div>
+</div>
 <div class="controls">
-<input type="text" id="searchBox" placeholder="🔍 Search Name, Region or Phone...">
-<button id="showAllBtn">Show All</button>
+<input type="text" id="searchBox" placeholder="🔍 Search by Name, Region or Address...">
+<select id="regionFilter"><option value="">🌍 All Regions</option></select>
+<button id="showAllBtn">🔄 Reset Filters</button>
 </div>
 <div class="content-wrapper">
 <div class="sidebar">
-<div class="region-list">
-<h3>📍 Locations (<span id="vcCount">124</span>)</h3>
-<ul id="vcList"></ul>
-</div>
-<div class="legend">
-<h3>🗺️ Map Legend</h3>
-<div class="legend-item"><span class="legend-dot dot-tertiary"></span><strong>Tertiary Hospital</strong> (1)</div>
-<div class="legend-item"><span class="legend-dot dot-secondary"></span><strong>Secondary Hospitals</strong> (8)</div>
-<div class="legend-item"><span class="legend-dot dot-primary"></span><strong>Vision Centres</strong> (115)</div>
+<div class="panel region-list">
+<h3>📍 Locations List</h3>
+<ul id="vcList"></ul></div>
+<div class="panel">
+<h3>📊 Region Distribution</h3>
+<div id="chartContainer" class="chart-container"></div>
 </div>
 </div>
 <div id="map"></div>
 </div>
-</main>
+</div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const H=[["Dr. Shroff's Charity Eye Hospital, Daryaganj","tertiary","Delhi",28.646120340133912,77.24199032567381,"5027, Kedarnath Ln, opposite DAV School, Daryaganj, Delhi, 110002","01143524444"],["Dr. Shroff's Charity Eye Hospital, Manani","secondary","Saharanpur",29.884128808170637,77.50283591988405,"Delhi - Saharanpur Rd, Tuglakpur, UP 247451","09368951362"],["BHRC Dr. Shroff's Charity Eye Institute","secondary","Vrindavan",27.567185616089297,77.68546383612997,"Near T.B.Hospital, Atalla chungi, Vrindavan, UP 281121","08171755757"],["Dr. Shroff's Charity Eye Hospital","secondary","Mohammadi",27.941380746363038,80.17551667140982,"Sehdeva, Mohammadi, UP 262804","8795469901"],["Dr. L.K Gandhi Shroff Eye Institute","secondary","Modi Nagar",28.877408008781376,77.60840826625507,"Kardabad, near Police Choki, Modinagar, UP 250205","09258777211"],["Dr. Shroff's Charity Eye Centre","secondary","Meerut",28.98128444683312,77.70500193987938,"Jali Kothi Rd, Chhipiwara, Meerut, UP 250002","09897262878"],["Dr. Shroff's Charity Eye Hospital","secondary","Alwar",27.566666615322134,76.63042900412245,"Plot 138, APEX Hospital Building, Subhash Nagar, Alwar, Rajasthan 301001","01442370559"],["Rotary Dr. Shroff's Charity Eye Clinic","secondary","Karol Bagh",28.650168579657112,77.19816305488366,"Joshi Rd, Block A, Karol Bagh, Delhi, 110005","01145730600"],["Dr. Shroff's Charity Eye Hospital","secondary","Munger",25.3852594828,86.4708161251,"Dr S M Gupta Road, Chhoti Kelabari, Munger, Bihar 812101","6344455576"]];
-const V=[["Mawana Vision Centre","Meerut",29.108773647470382,77.92318115380641,"Moh Kabli Gate Hastinapur Road Mawana","9634739552"],["Kithore Vision Centre","Meerut",28.86656037989761,77.93229668078204,"Hapur Road Kithor","9412122481"],["Meerut Urban VC","Meerut",28.981220317047605,77.7048661539054,"Budhana gate, Meerut","9897262870"],["Lawar Vision Centre","Modi Nagar",29.11058443983574,77.77245242311933,"Lawar Meerut","7820024440"],["Amir Nagar Sarai Vision Centre","Modi Nagar",28.989144968142888,77.39538902496615,"Aminagar Sarai Baghpat","9105698536"],["Jani Khurd Vision Centre","Modi Nagar",28.965539444229623,77.5612368384575,"Jaani Khud Meerut","7302556843"],["Rithani Vision Centre","Modi Nagar",28.93717419987573,77.66689473845646,"Rithani Meerut","8532862714"],["Hapur Vision Centre","Modi Nagar",28.738274989064937,77.76230358077731,"Hapur","7453883359"],["Murad Nagar Vision Centre","Modi Nagar",28.776595318329722,77.50236090883588,"Murad Nagar","8818062073"],["Kharkhoda Vision Centre","Modi Nagar",28.832586758380934,77.74409426728856,"Kharkhoda","9634962350"],["Rampur Vision Centre","Saharanpur",29.803160926516323,77.45764545383254,"Rampur","9258114990"],["Thanabhawan Vision Centre","Saharanpur",29.590635749006363,77.42107882313734,"Thanabhawan","9258114984"],["Behat Vision Centre","Saharanpur",30.174896162991956,77.61627815384678,"Behat","9258114980"],["Gangoh Vision Centre","Saharanpur",29.778808472974,77.26650023848805,"Gangoh","9258114988"],["Nagal Vision Centre","Saharanpur",29.83613057709991,77.62701471150562,"Nagal","9258114987"],["Nakur Vision Centre","Saharanpur",29.920190802776006,77.30719885383701,"Nakur","9258114983"],["Chilkana Vision Centre","Saharanpur",30.074357306823927,77.46968372500707,"Chilkana","9258114981"],["Chhutmalpur Vision Centre","Saharanpur",30.033545838589998,77.74936708082595,"Chhutmalpur","9258114992"],["Manakmau Vision Centre","Saharanpur",29.96358751960717,77.511667867331,"Manakmau","9258114982"],["Deoband Vision Centre","Saharanpur",29.695777631113934,77.6846897961567,"Deoband","9258114989"],["Nanauta Vision Centre","Saharanpur",29.715295365996713,77.41978319615743,"Nanauta","9258114993"],["Sarsawan Vision Centre","Saharanpur",30.016524058355404,77.40343705384069,"Sarsawa","9258114991"],["Badgaon Vision Centre","Saharanpur",29.70880878771658,77.53238448266488,"Badgaon","9258114986"],["Unn Vision Centre","Saharanpur",29.58730743710165,77.24854058080896,"Unn Shamli","9258282023"],["Charthawal Vision Centre","Saharanpur",29.542527421940004,77.59322512313548,"Charthawal","9258282025"],["Malakhera Vision Centre","Alwar",27.390213752288968,76.62573301126598,"Malakhera","7877943004"],["Bansur Vision Centre","Alwar",27.689003229178542,76.35303863826485,"Bansur","6367017223"],["Tapukara Vision Centre","Alwar",28.112625906181787,76.82859915362114,"Tapukhera","9352886037"],["Rajgarh Vision Centre","Alwar",27.23984319897871,76.61311775359007,"Rajgarh","8302361651"],["Kathumar Vision Centre","Alwar",27.322504608076546,77.08091458242832,"Kathumar","8000576119"],["Tizara Vision Centre","Alwar",27.930379881535146,76.85582145361457,"Tijara","8000524112"],["Buhana Vision Centre","Alwar",28.198036903422967,75.87221053828308,"Buhana","9216910983"],["Puwayan Vision Centre","Mohammadi",28.072793974524586,80.10395275191723,"Puwayan","6307209434"],["Mitauli Vision Centre","Mohammadi",27.810025196793895,80.47143072492321,"Mitauli","7518109807"],["Gola Vision Centre","Mohammadi",28.07782849837154,80.47811809609689,"Gola","9151477176"],["Banke Ganj Vision Centre","Mohammadi",28.15671497104023,80.41473708075618,"Bankeganj","9519611773"],["JB Ganj Vision Centre","Mohammadi",27.774915241213545,80.16952653931625,"Jang Bhadur Ganj","9140749107"],["Maigal Ganj Vision Centre","Mohammadi",27.71935675689925,80.33828232491992,"Maigalganj","7905223174"],["City Clinic Vision Centre","Mohammadi",27.875299429115074,79.9329052672537,"City park lodipur","7458026244"],["Khutar Vision Centre","Mohammadi",28.223458068379237,80.26861503843033,"Khutar","6393370554"],["Aliganj Vision Centre","Mohammadi",28.110780009358834,80.58840073842627,"Aliganj","7705031091"],["Sikandrabad Vision Centre","Mohammadi",27.95078805197887,80.49667902492824,"Sikandrabad","8127074077"],["Behjam Vision Centre","Mohammadi",27.88009567195285,80.63488718074615,"Behjam","9911959025"],["Pihani Vision Centre","Mohammadi",27.62047111558387,80.19284683840871,"Pihani","9455129179"],["Shahbad Vision Centre","Mohammadi",27.6617426764965,79.93767323841016,"Shahabad","7380613194"],["Mukarampur Vision Centre","Mohammadi",27.903890645671794,80.02612098259834,"Mukrampur","6388590939"],["Fardhan Vision Centre","Mohammadi",27.99184834499466,80.64094409609376,"Fardhan","7355302425"],["Sundarwal Vision Centre","Mohammadi",28.076072902737415,80.7267806537686,"Sundarwal","6386174628"],["Jalalabad Vision Centre","Mohammadi",27.71809398548339,79.65252953841224,"Jalalabad","8090397098"],["Sindhauli Vision Centre","Mohammadi",27.974280594309533,79.97833489609319,"Sindholi","9794114486"],["Nigohi Vision Centre","Mohammadi",28.10237340382885,79.87685155376957,"Nigohi","8429118686"],["Kanth Vision Centre","Mohammadi",27.811835694815688,79.78581666725145,"Kanth","8726995461"],["Allaganj Vision Centre","Mohammadi",27.547519919838276,79.68915410957025,"Allaganj","8881923318"],["Nakaha Vision Centre","Mohammadi",27.886055611684423,80.9443486230746,"Nakaha","6390193513"],["LRP Vision Centre","Mohammadi",27.92096435485254,80.7658440960913,"Lakhimpur","9792156806"],["Dhakerwa Vision Centre","Mohammadi",28.16867704928528,80.99472163842835,"Dhakerwa","9305363971"],["Pali Vision Centre","Mohammadi",27.53020752908751,79.83702248073374,"Pali","8081665170"],["Uchaulia Vision Centre","Mohammadi",27.814021105616067,80.0686333558205,"Uchaulia","8081801294"],["Behta Gokul Vision Centre","Mohammadi",27.515663647344116,80.0202372537486,"Behta Gokul","9455129179"],["Puranpur Vision Centre","Mohammadi",28.504304629549658,80.15280339611236,"Puranpur","9756767445"],["Tilhar Vision Centre","Mohammadi",27.96044199096988,79.74454388260037,"Tilhar","9305319377"],["Bilsinda Vision Centre","Mohammadi",28.24016808256916,79.94757085377458,"Bilsanda","6393859718"],["Raya Vision Centre","Vrindavan",27.554994533494884,77.79064006894234,"Raya Mathura","9258109261"],["Chhata Vision Centre","Vrindavan",27.72151375415079,77.50745817874844,"Chhata Mathura","8920964419"],["Baldeo Vision Centre","Vrindavan",27.412944524276337,77.82743718243148,"Baldev","9258109251"],["Goverdhan Vision Centre","Vrindavan",27.4999150006577,77.46422696709341,"Goverdhan","9258109255"],["Deeg Vision Centre","Vrindavan",27.47043309571251,77.3244480401041,"Deeg Bharatpur","9166759528"],["Mathura City Clinic VC","Vrindavan",27.498434182900986,77.6777047846873,"Mathura","9548779049"],["Township Vision Centre","Vrindavan",27.435599549180015,77.70249264417643,"Mathura","9761345741"],["Mursan Vision Centre","Vrindavan",27.576799220336387,77.93992774010788,"Mursan Hathras","9258109260"],["Iglas Vision Centre","Vrindavan",27.70176831216394,77.94552792477118,"Iglas","9258109256"],["Mant Vision Centre","Vrindavan",27.634455288062576,77.71386475175704,"Mant","7906144214"],["Sonkh Vision Centre","Vrindavan",27.39698867048446,77.49603709592512,"Sonkh","7983130382"],["Gonda Vision Centre","Vrindavan",27.831087037232027,77.87831683826988,"Gaunda Aligarh","9258256348"],["Farah Vision Centre","Vrindavan",27.31848335848753,77.76676991126351,"Farah","7500131439"],["Achhnera Vision Centre","Vrindavan",27.175537216265962,77.76428265174084,"Achhnera Agra","7906096889"],["Sadabad Vision Centre","Vrindavan",27.439500151971515,78.02806078243245,"Sadabad","9258256344"],["Kosi Kalan Vision Centre","Vrindavan",27.790982400238523,77.44194157875087,"Kosi Kalan","9258256345"],["Hathras Jn VC","Vrindavan",27.630976533902288,78.14510975360389,"Hathras","6398511494"],["Khandauli Vision Centre","Vrindavan",27.304693677731766,78.03075280941596,"Khandauli Agra","9520127703"],["Khair Vision Centre","Vrindavan",27.945706748217717,77.83510623827395,"Khair Aligarh","8859548528"],["Etmadpur Vision Centre","Vrindavan",27.23486565579708,78.19363619591942,"Etmadpur Agra","6395115862"],["Chaumuha Vision Centre","Vrindavan",27.618620030574366,77.5821609805918,"Chaomuha","7088474732"],["Shergarh Vision Centre","Vrindavan",27.777898649029318,77.60651846710323,"Shergarh","6398583266"],["Anora Vision Centre","Vrindavan",27.505774880105232,77.88466116931771,"Anora","8534963686"],["Surir Vision Centre","Vrindavan",27.772556324693674,77.7240924517619,"Surir","7906537068"],["Nand Gaon Vision Centre","Vrindavan",27.71614918415289,77.38534933826578,"Nandgaon","9784903544"],["Mandi Chauraha VC","Vrindavan",27.489066745607605,77.65174983825771,"Mathura","7078847497"],["Ole Vision Centre","Vrindavan",27.30203311548424,77.62596465174535,"Ole","6263974155"],["Jattari Vision Centre","Vrindavan",28.023439,77.658263,"Jattari","8650430181"],["Raal Vision Centre","Vrindavan",27.55575671483748,77.56305900942478,"Raal","9528164105"],["Chandaus Vision Centre","Vrindavan",28.081468,77.854351,"Chandaus","7037881948"],["Mustafabad Vision Centre","Delhi",28.708888694123157,77.27643367116471,"Mustafabad Delhi","9315904771"],["Jahangirpuri Vision Centre","Delhi",28.72741422030776,77.16335924417643,"Jahangirpuri Delhi","9315904791"],["Bhajanpura Vision Centre","Delhi",28.707684356961206,77.26298292883529,"Bhajanpura Delhi","9315904684"],["Brahampuri Vision Centre","Delhi",28.687762160152836,77.26974454417643,"Brahmapuri Delhi","9315903906"],["Sonipet Vision Centre","Delhi",28.995164926354324,77.02107071534115,"Sonipat Haryana","9569522543"],["Badarpur Vision Centre","Delhi",28.49973003125448,77.33244888650586,"Badarpur Delhi","9315903921"],["Shahdara Vision Centre","Delhi",28.669590849716766,77.29563451349414,"Shahdara Delhi","9315904784"],["Sahabad Diary VC","Delhi",28.744173184843692,77.09821585767057,"Shahbad Dairy Delhi","9315904689"],["Sangam Vihar Vision Centre","Delhi",28.5067200073073,77.24803852883528,"Sangam Vihar Delhi","9315904958"],["Madangir Vision Centre","Delhi",28.52162726122186,77.23186110000002,"Madangir Delhi","9315904794"],["Purkhash Vision Centre","Delhi",29.11009043345072,76.94351892698829,"Purkhash Sonepat","7056401146"],["Khanpur Vision Centre","Delhi",28.512257227733063,77.23205998650586,"Khanpur Delhi","9315904954"],["Shaheed Nagar Vision Centre","Delhi",28.67897875815208,77.33450634232945,"Shaheed Nagar Gzb","8081183359"],["Madanpur Khadar VC","Delhi",28.53242342239104,77.30275634232943,"Madanpur Khadar","7017090577"],["Mandwali Vision Centre","Delhi",28.628266032282443,77.29891855582358,"Mandwali Delhi","7982603289"],["Dankaur Vision Centre","Delhi",28.350989696390855,77.5556680204687,"Dankaur","9760903184"],["Krishna Nagar Vision Centre","Delhi",28.649526313670354,77.2801969306823,"Krishna Nagar","9365915363"],["Marwari Ayushdhalaya VC","Delhi",28.65500658506947,77.23211744232943,"Chandni Chowk","8800688149"],["Kodli Vision Centre","Delhi",28.613442624404534,77.323575101847,"Kondali Delhi","9650543034"],["Murthal Adda Vision Centre","Delhi",29.002621634163532,77.02333329999304,"Murthal Sonepat","8168218930"],["Mundka Vision Centre","Delhi",28.678281216851992,77.02780061647594,"Mundka Delhi","8851969941"],["Dr. Shroff VC (Burari)","Delhi",28.756519282868325,77.1983210881198,"Burari Delhi","8376884695"],["Dr. Shroff VC (Ganaur)","Delhi",29.145245494816752,77.04027376279166,"Gannaur Sonepat","9953870846"]];
+const H=[["Dr. Shroff's Charity Eye Hospital, Daryaganj","tertiary","Delhi",28.6461,77.2420,"5027, Kedarnath Ln, opposite DAV School, Daryaganj, Delhi, 110002","01143524444"],["Dr. Shroff's Charity Eye Hospital, Manani","secondary","Saharanpur",29.8841,77.5028,"Delhi - Saharanpur Rd, Tuglakpur, Uttar Pradesh 247451","09368951362"],["BHRC Dr. Shroff's Charity Eye Institute","secondary","Vrindavan",27.5672,77.6855,"Near T.B.Hospital, Atalla chungi, Rd, Mathura, Vrindavan, Uttar Pradesh 281121","08171755757"],["Dr. Shroff's Charity Eye Hospital","secondary","Mohammadi",27.9414,80.1755,"Sehdeva, Mohammadi, Uttar Pradesh Pin code-262804","8795469901"],["Dr. L.K Gandhi Shroff Eye Institute","secondary","Modi Nagar",28.8774,77.6084,"Dr LK Gandhi- Shroff Eye Institute Kardabad, near Police Choki, Modinagar, Ghaziabad, Uttar Pradesh 250205","09258777211"],["Dr. Shroff's Charity Eye Centre at Mathur Eye Clinic","secondary","Meerut",28.9813,77.7050,"Jali Kothi Rd, Chhipiwara, Meerut, Uttar Pradesh 250002","09897262878"],["Dr. Shroff's Charity Eye Hospital","secondary","Alwar",27.5667,76.6304,"Plot 138, Ist Floor, APEX Hospital Building, Subhash Nagar, Shastri Nagar, Alwar, Rajasthan 301001","01442370559"],["Rotary Dr. Shroff's Charity Eye Clinic","secondary","Karol Bagh, Delhi",28.6502,77.1982,"Joshi Rd, Block A, Karol Bagh, Delhi, 110005","01145730600"],["Dr. Shroff's Charity Eye Hospital","secondary","Munger",25.3853,86.4708,"Dr S M Gupta Road, Chhoti Kelabari, beside Machli Talab, Munger, Bihar 812101","6344455576"]];
+const V=[["Mawana Vision Centre","Meerut",29.1088,77.9232,"Moh Kabli Gate Hastinapur Road Mawana Meerut"],["Kithore Vision Centre","Meerut",28.8666,77.9323,"Hapur Road nearby Hapur bus stand Kithor Meerut"],["Meerut Urban VC","Meerut",28.9812,77.7049,"Budhana gate, Meerut"],["Lawar Vision Centre","Modi Nagar",29.1106,77.7725,"68, Moh Nayi Basti Nearby kabli Masjid Lawar Meerut"],["Amir Nagar Sarai Vision Centre","Modi Nagar",28.9891,77.3954,"Samadhi Isthal Nearby Post office Aminagar Sarai Baghpat"],["Jani Khurd Vision Centre","Modi Nagar",28.9655,77.5612,"Bhoopgarhi Road daakkhane ke Samne Jaani Khud Meerut"],["Rithani Vision Centre","Modi Nagar",28.9372,77.6669,"Dharm complex Pootha road,Nearby Rithani Peer Rithani Meerut"],["Hapur Vision Centre","Modi Nagar",28.7383,77.7623,"Adarsh Nagar Colony Nearby Modinagar Fly Over Hapur"],["Murad Nagar Vision Centre","Modi Nagar",28.7766,77.5024,"Subhash Mandi Main Road Murad Nagar, Ghaziabad"],["Kharkhoda Vision Centre","Modi Nagar",28.8326,77.7441,"Old Picture Hall, Main Road Kharkhoda, Meerut"],["Rampur Vision Centre","Saharanpur",29.8032,77.4576,"Rampur Netra Janch Kendra Deoband road in front of Tehsil, Rampur District Saharanpur"],["Thanabhawan Vision Centre","Saharanpur",29.5906,77.4211,"Madina market near Charthawal bus stend city garden road thanabhawan District Shamli"],["Behat Vision Centre","Saharanpur",30.1749,77.6163,"Moh- Khalsa near Ravidass mandir ke samne Behat. District Saharanpur"],["Gangoh Vision Centre","Saharanpur",29.7788,77.2665,"Shiv Chowk, Ramleela Bhawan Compound, Ganhoh, District Saharanpur"],["Nagal Vision Centre","Saharanpur",29.8361,77.6270,"Railway Road, Pal Market, Block Nagal, District Saharanpur"],["Nakur Vision Centre","Saharanpur",29.9202,77.3072,"In front of KLGM inter college near Dr KP Panwar, District Saharanpur"],["Chilkana Vision Centre","Saharanpur",30.0744,77.4697,"Lala salagram complax, opposite post office, Chilkana, District Saharanpur"],["Chhutmalpur Vision Centre","Saharanpur",30.0335,77.7494,"Amardeep Colony, Near - Jyoti Kiran Chowk. Dehradun -Saharanpur road, Chhutmalpur District Saharanpur"],["Manakmau Vision Centre","Saharanpur",29.9636,77.5117,"Gangoh nakur road near Barkat medical store Manakmau,District Saharanpur"],["Deoband Vision Centre","Saharanpur",29.6958,77.6847,"Manglore Chowki, Near Punjab National bank, Pillar No. 58 muzzafarnagar road Deaoband, District Saharanpur"],["Nanauta Vision Centre","Saharanpur",29.7153,77.4198,"Gangoh Road, Near-Choudhary Palace, Block - Nanauta, Dist: Saharanpur"],["Sarsawan Vision Centre","Saharanpur",30.0165,77.4034,"Gayatri markit Mata wali Gali Sarsawa, District Saharanpur"],["Badgaon Vision Centre","Saharanpur",29.7088,77.5324,"Near Maharana Pratap Chowk, Rampur Deoband Road, Badgaon, District Saharanpur"],["Unn Vision Centre","Saharanpur",29.5873,77.2485,"Unn Baipass ROAD oppsite Thasil Gate, Block- Unn, Disrict Shamli"],["Charthawal Vision Centre","Saharanpur",29.5425,77.5932,"Ruhana Bus Stand, Aabad furniture showroom ke brabar me, Muzzafarnagar Road, Block- Charthawal, Dist.- Muzzafarnagar"],["Malakhera Vision Centre","Alwar",27.3902,76.6257,"Opposite to Govt Hospital, Railway Station Road, Malakhera"],["Bansur Vision Centre","Alwar",27.6890,76.3530,"In front of Government School, Harsoora Road, Suraj Complex, Bansur (Rajasthan)"],["Tapukara Vision Centre","Alwar",28.1126,76.8286,"Near SBI Bank, Alwar–Bhiwadi Bypass, Tapukhera, Alwar (Rajasthan)"],["Rajgarh Vision Centre","Alwar",27.2398,76.6131,"Mela Chowharaya, Bus Stand Road, Rajgarh (Rajasthan)"],["Kathumar Vision Centre","Alwar",27.3225,77.0809,"In front of Government Hospital, Kherli Road, Kathumar (Rajasthan)"],["Tizara Vision Centre","Alwar",27.9304,76.8558,"Ward No. 11, In front of Civil Court, Tijara, Alwar (Rajasthan)"],["Buhana Vision Centre","Alwar",28.1980,75.8722,"Near Narayani Devi Khemka Mandir, Maring, Buhana–333502, Jhunjhunu (Rajasthan)"],["Puwayan Vision Centre","Mohammadi",28.0728,80.1040,"Puwayan Netra Janch Kendra,Near-Jewan Mode,Khutar Road,Puwayan Shahahanpur"],["Mitauli Vision Centre","Mohammadi",27.8100,80.4714,"Mitauli Netra Janch Kendra,Near-Ladaiti Davi Petrol Pump,Maigalganj Road,Mitauli,Lakhimpur Kheri"],["Gola Vision Centre","Mohammadi",28.0778,80.4781,"Gola Netra Janch Kendra,Near-saroj Cenema,Chota Chaurah,Lakhimpur Road,Gola,Gokrannath,Kheri"],["Banke Ganj Vision Centre","Mohammadi",28.1567,80.4147,"Bankegasnj Netra Janch Kendra,Main Bazar Chauraha,Bankeganj,Lakhimpur Kheri"],["JB Ganj Vision Centre","Mohammadi",27.7749,80.1695,"JB Ganj Netra Janch Kendra,Near-Allahabad Bank,GT Road,Jang Bhadur Ganj,Block-Pasgwan,Lakhimpur,Kheri"],["Maigal Ganj Vision Centre","Mohammadi",27.7194,80.3383,"Maigalganj Netra Janch Kendra,Near- Naveen galla Manddi,On frunt Bank of Baroda, Maigalganj,Lakhimpur,Kheri"],["City Clinic Vision Centre","Mohammadi",27.8753,79.9329,"Urban VC City clinic (City park, lodipur, sahajanpur-up,242001)"],["Khutar Vision Centre","Mohammadi",28.2235,80.2686,"Khutar Netra Janch Kendr,Near-Lala Ram Chikitsalay,Mailani Paliya Road,Tikuniya Khutar,Shahanjhanpur"],["Aliganj Vision Centre","Mohammadi",28.1108,80.5884,"Aliganj Netra Janch Kendra, Near-Bijuwa tiraha,Aliganj-Kheri"],["Sikandrabad Vision Centre","Mohammadi",27.9508,80.4967,"Sikandrabad Netra Janch Kendra,Kasta Road,Block-Kumbhi Sikandrabad,Kheri"],["Behjam Vision Centre","Mohammadi",27.8801,80.6349,"Behjam Netra Janch Kendra,Kasta Road,Near-Bhartiy State Bank,Behjam-Kheri"],["Pihani Vision Centre","Mohammadi",27.6205,80.1928,"Phani Netra Janch Kendra,Near power House,Hardoi Road,Pihani-Hardoi"],["Shahbad Vision Centre","Mohammadi",27.6617,79.9377,"Sahabad Netra Janch Kendra,On frunt-MangguBaba Ki Mazar,Near-Egwan Mode,Allahpur Chungi Chauki,Sahabad-Hardoi"],["Mukarampur Vision Centre","Mohammadi",27.9039,80.0261,"Mukarampur Netra Janch Kendra,Nera-Bajaj Service Center,Mohammadi Shahajhanpur Road,Block-Bhawalkhera,Mukrampur"],["Fardhan Vision Centre","Mohammadi",27.9918,80.6409,"Fardhan Netra Janch Kendra,Near -Thana Fardhan,Gola Lakhimpur Road,Block-Lakhimpur,fardhan-Kheri"],["Sundarwal Vision Centre","Mohammadi",28.0761,80.7268,"Sundarwal Netra janch kendra,Near-main Market,Bijuwa Road,Sundarwal kheri"],["Jalalabad Vision Centre","Mohammadi",27.7181,79.6525,"Jalalabad Netra Janch Kendra, Siya Ram Petrol Pump Ke Samane Farukhabad Road Gram - gunara Block- Jalalabad Shahjahanpur"],["Sindhauli Vision Centre","Mohammadi",27.9743,79.9783,"Sindholi Netra Janch Kendra, Near Guruwara Puwaya Road Shahjahanpur Road Block - Sindholi Shahjahanpur"],["Nigohi Vision Centre","Mohammadi",28.1024,79.8769,"Nigohi Netra Janch Kendra, Near Railway Crossing Puwaya Road Block - Nigohi Shahjahanpur"],["Kanth Vision Centre","Mohammadi",27.8118,79.7858,"R.C.M.D. Marrige Hall Near- Ramleela Maidan Madnapur Vikash Khand- Kanth Shahjahanpur"],["Allaganj Vision Centre","Mohammadi",27.5475,79.6892,"Near Baroda UP Gramin Bank, Farukhabad road,Allaganj"],["Nakaha Vision Centre","Mohammadi",27.8861,80.9443,"Main Market, Bahraish Road, Nakaha-262728"],["LRP Vision Centre","Mohammadi",27.9210,80.7658,"Sitapur Road, Lakhmipur khiri, near by paul international school"],["Dhakerwa Vision Centre","Mohammadi",28.1687,80.9947,"Nageshwar Mandir, dhora road, dhakerwa choraya, block-ramiya bhed, lakhmipur kheri"],["Pali Vision Centre","Mohammadi",27.5302,79.8370,"Saheed abid kah ki majar, rupapur road, block-bharkhani, hardoi"],["Uchaulia Vision Centre","Mohammadi",27.8140,80.0686,"opposite bala ji trading company near uchalia police station block pashgava, lakhimpur kheri-261505"],["Behta Gokul Vision Centre","Mohammadi",27.5157,80.0202,"opposite police station near aparvit bank, behta gokul, block paawan, hardoyi-241001"],["Puranpur Vision Centre","Mohammadi",28.5043,80.1528,"Near Pirani ki majar, block road puranpur, district pilibheth"],["Tilhar Vision Centre","Mohammadi",27.9604,79.7445,"In front of Govt. Hospital, near the back gate of Naveen Galla Mandi, Tilhar, Shahjahanpur"],["Bilsinda Vision Centre","Mohammadi",28.2402,79.9476,"Bisalpur Road, Near Jwala Marriage Lawn (Tikunia Square) Bilsanda-Bisalpur (Pilibhit)"],["Raya Vision Centre","Vrindavan",27.5550,77.7906,"G.D.Plaza, Hathras Road Raya Mathura,281204"],["Chhata Vision Centre","Vrindavan",27.7215,77.5075,"Old G.T Road Sabji Mandi,Front Dr.Girraj Clinic, Chhata Mathura 281401"],["Baldeo Vision Centre","Vrindavan",27.4129,77.8274,"Kailash Road, Baldev, Mathura, 281301"],["Goverdhan Vision Centre","Vrindavan",27.4999,77.4642,"Dr. Bharat Dixit Medical Mansi Ganga Goverdhan Mathura 281502"],["Deeg Vision Centre","Vrindavan",27.4704,77.3244,"Old Tehseel, Lupin Office, Deeg Bharatpur 321203"],["Mathura VC/City Clinic","Vrindavan",27.4984,77.6777,"Bharatpur Gete, Near-K.R.Collage, Mathura 281001"],["Township Vision Centre","Vrindavan",27.4356,77.7025,"Brij Vatika, Gokul Bairaj, Road opp/ Petrol Pump Mathura 281001"],["Mursan Vision Centre","Vrindavan",27.5768,77.9399,"R.G Public School Near Old Electric Power Mursan Hathras 204213"],["Iglas Vision Centre","Vrindavan",27.7018,77.9455,"Chameli Devi Memorial Hospital,Hathras Road Iglas, 202124"],["Mant Vision Centre","Vrindavan",27.6345,77.7139,"Agrasen Bhawan Near Dank Bangla Mant (Mathura) 281202"],["Sonkh Vision Centre","Vrindavan",27.3970,77.4960,"Lalita Prasad Hospital,chamunda, Road,near- petrol pump Sonkh,Mathura 281123"],["Gonda Vision Centre","Vrindavan",27.8311,77.8783,"Sumangal complex thana road, gaunda(Aligarh)-202123"],["Farah Vision Centre","Vrindavan",27.3185,77.7668,"Makdoom Tiraha, Farah (Mathura)-281122, in front of Parshuram Temple"],["Achhnera Vision Centre","Vrindavan",27.1755,77.7643,"Near Green Land Public school Rayba Road Achhnera (Agra) 283101"],["Sadabad Vision Centre","Vrindavan",27.4395,78.0281,"Jaat Nager Near Honda Agency Mathura Road Sadabad 281306"],["Kosi Kalan Vision Centre","Vrindavan",27.7910,77.4419,"Radha Govind Nager, Old G.T Road Opp/ Nager Palika Kosi Kalan Mathura"],["Hathras Junction Vision Centre","Vrindavan",27.6310,78.1451,"Sikandarau Road Devi Nager Hathras Junction (Hathras) U.P"],["Khandauli Vision Centre","Vrindavan",27.3047,78.0308,"Opposite Kasturi Devi Traders Agra-Aligarh-Road-Ramnagar Khandauli District-Agra, Pin-283126"],["Khair Vision Centre","Vrindavan",27.9457,77.8351,"Next to Punjab National Bank, Khair, District-Aligarh"],["Etmadpur Vision Centre","Vrindavan",27.2349,78.1936,"Barhan Road, Opposite Vaidya Bhup Singh Hospital, Etmadpur, District Agra-283202"],["Chaomuha Vision Centre","Vrindavan",27.6186,77.5822,"Chhitar singh market, block road, chaomuha, Mathura-281406"],["Shergarh Vision Centre","Vrindavan",27.7779,77.6065,"Near Chhata road Petrol pump, Chhata teshil shergarh, Mathura-281404"],["Anora Vision Centre","Vrindavan",27.5058,77.8847,"Gram anora, Mahavan Teshil, District Mathura-281308"],["Surir Vision Centre","Vrindavan",27.7726,77.7241,"Near SBI, Naujheel, Mant Road, Surir, Mathura"],["Nand Gaon Vision Centre","Vrindavan",27.7161,77.3853,"Nandgaon dehaat, opposite police chowki, nandgoan, mathura"],["Mandi Chauraha Vision Centre","Vrindavan",27.4891,77.6517,"Kuntal Market, Sonkh road, Mandi Chauraha, Mathura-281001"],["Ole Vision Centre","Vrindavan",27.3020,77.6260,"Opposite amedakar park, ole farah, Mathura-281122"],["Jattari Vision Centre","Vrindavan",28.0234,77.6583,"HDFC Bank ke pass, Jattari Pisava Road, Jattari, Dist-Aligarh"],["Raal Vision Centre","Vrindavan",27.5558,77.5631,"Below Canara Bank, Mathura Teshil, District mathura-281504"],["Chandausi Vision Centre","Vrindavan",28.0815,77.8544,"Near Dr lal path lab chandaus main road, Chandaus, Dist-Aligarh"],["Mustafabad Vision Centre","Delhi",28.7089,77.2764,"Mustafabad Netra Janch Kendra, A-3 Bhagirathi Vihar Ph-1, Bikaner Sweet Home ke Pass Mustfabad, Delhi-110094"],["Jahangirpuri Vision Centre","Delhi",28.7274,77.1634,"Jahangirpuri Netra Janch Kendra- A- Block B3X, DDA Flat, Agarwal Sweet Home ke Pass Jahangirpuri, Delhi, Pin 110033"],["Bhajanpura Vision Centre","Delhi",28.7077,77.2630,"Bhajanpura Netra Janch Kendra- 517/9 Moonga Nagar, Karawal Nagar Road Delhi -110094"],["Brahampuri Vision Centre","Delhi",28.6878,77.2697,"Brahmapuri Netra Janch Kendra,351 Main Road Brahmapuri, Rajpoot Muhlla, Ghonda Chauk"],["Sonipet Vision Centre","Delhi",28.9952,77.0211,"Drishti Netra jaanch Kendra- Durga Mandir Mohalla Kalan, Near Geeta bhavan chowk, Sonipet, Haryana. Pin 131001"],["Badarpur Vision Centre","Delhi",28.4997,77.3324,"Badarpur Netra Janch Kendra-F4/Block F, Jaitpur Extension, Badarpur, near Dheer Garden, opposite SBI ATM, South Delhi New Delhi 110044"],["Shahdara Vision Centre","Delhi",28.6696,77.2956,"Shahdara Netra Janch Kendra- 7/19 lahori Gali, Jwala Nagar Chowk, Shahdara Delhi -110032"],["Sahabad Diary Vision Centre","Delhi",28.7442,77.0982,"Shahbad Dairy Janch Kendra- House No.C-107, Shahbad dairy, Delhi Pin- 110042"],["Sangam Vihar Vision Centre","Delhi",28.5067,77.2480,"Sangam Vihar Netra Janch Kendra-H No- 24 Gali No- 8/1, G block, Ratiya Marg, Sangam Vihar, Near Bharat Gas Godown, Delhi Pin 110080"],["Madangir Vision Centre","Delhi",28.5216,77.2319,"Madangiri Netra janch Kendra- H. No- H1st, 45A, Basement, JJ Colony, Sabji Mandi, ke Pass, Madangir,Delhi, Pin 110062"],["Purkhash Vision Centre","Delhi",29.1101,76.9435,"Purkhash Netra Janch Kendra- Village Purkhash Dhiran, Sonepat, Haryana, Near Kailan Mode, Purkhas, Haryana, Pin- 131102"],["Khanpur Vision Centre","Delhi",28.5123,77.2321,"Khanpur Netra Janch Kendra- H.No- 250-A Shuttar Wali Gali, Devli Road, Vishal Mega Mart ke Pass, Khanpur, Delhi, Pin 110062"],["Shaheed Nagar Vision Centre","Delhi",28.6790,77.3345,"Plot No-2/260 ( near Kallan chowk) shaheed Nagar, shaibabad Gaziabad, UP-201006"],["Madanpur Khadar Vision Centre","Delhi",28.5324,77.3028,"Chahuhan Muhhalla, Madanpur Khadar"],["Mandwali Vision Centre","Delhi",28.6283,77.2989,"Street No-7, Chandar Vihar, Mandwali, East Delhi-110092"],["Dankaur Vision Centre","Delhi",28.3510,77.5557,"H-194, Dhankaur road, prempuri, opposite post office dhankaur, up-20320"],["Krishna Nagar Vision Centre","Delhi",28.6495,77.2802,"19-A/1Baba karam singh Marg (Rashid Market), Krishna Nagar Delhi-51"],["Marwari Ayushdhalaya VC","Delhi",28.6550,77.2321,"Dariban kala, Kinari Bazar, Chandni Chowk, New Delhi-110006"],["Kodli Vision Centre","Delhi",28.6134,77.3236,"Khasra No. 208, Bhutal, Muni Lal Tower, village Kondali delhi-110096"],["Murthal Adda Vision Centre","Delhi",29.0026,77.0233,"Unique Mall Near Ganda Mala, Murthal Chauk Sonipat Haryana-131001"],["Mundka Vision Centre","Delhi",28.6783,77.0278,"Badi Chaupal, Mundka New Delhi-110041"],["Dr. Shroff VC (Burari)","Delhi",28.7565,77.1983,"17,Burari, Mangal Bazar road, Janta medical gali, Burari Village, ND-84"],["Dr. Shroff VC (Ganaur)","Delhi",29.1452,77.0403,"Shri Digambar Jain Tirtha Saurabhanchal, CCAS Jain Girls College, G. T. Road, Gannaur,131101"]];
+ 
 document.addEventListener('DOMContentLoaded',()=>{
 if(typeof L==='undefined'){alert("Internet check karein");return}
-const m=L.map('map').setView([27.5,79],7);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'©OSM',maxZoom:19}).addTo(m);
-const mk=(c,s)=>L.divIcon({className:'cm',html:`<svg width="${s}" height="${s}" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="${c}" stroke="#fff" stroke-width="1.5"/><circle cx="12" cy="9" r="3" fill="#fff"/></svg>`,iconSize:[s,s],iconAnchor:[s/2,s],popupAnchor:[0,-s]});
+const m=L.map('map').setView([27.5,79],6);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CARTO',maxZoom:20}).addTo(m);
+const mk=(c,s)=>L.divIcon({className:'cm',html:`<svg width="${s}" height="${s}" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="${c}" stroke="#fff" stroke-width="2"/><circle cx="12" cy="9" r="3" fill="#fff"/></svg>`,iconSize:[s,s],iconAnchor:[s/2,s],popupAnchor:[0,-s]});
 const tI=mk('#800080',42),sI=mk('#8b0000',36),pI=mk('#0056b3',30);
-const l=document.getElementById('vcList'),mkrs=[];
+// Fast counter animation
+const animateCounter=(el,target)=>{el.textContent=target};
+animateCounter(document.getElementById('sTotal'),H.length+V.length);
+animateCounter(document.getElementById('sTer'),H.filter(x=>x[1]==='tertiary').length);
+animateCounter(document.getElementById('sSec'),H.filter(x=>x[1]==='secondary').length);
+animateCounter(document.getElementById('sPri'),V.length);
+const l=document.getElementById('vcList'),mkrs=[],rc={},filter=document.getElementById('regionFilter');
 H.forEach((h,i)=>{
-const ic=h[1]==='tertiary'?tI:sI,tl=h[1]==='tertiary'?'Tertiary':'Secondary';
+const ic=h[1]==='tertiary'?tI:sI,tl=h[1]==='tertiary'?'🏥 Tertiary Hospital':'🏥 Secondary Hospital';
 const li=document.createElement('li');li.className=h[1];
-li.innerHTML=`<span class="vc-name">${h[0]}</span><span class="vc-details">📍 ${h[2]} | ${tl} Hospital</span><span class="vc-phone">📞 ${h[6]}</span>`;
+li.innerHTML=`<span class="vc-name">${h[0]}</span><span class="vc-details">📍 ${h[2]} | ${tl}</span><span class="vc-phone">📞 <a href="tel:${h[6]}" style="color:#28a745;text-decoration:none">${h[6]}</a></span>`;
 li.onclick=()=>{m.flyTo([h[3],h[4]],14);mkrs[i].openPopup()};l.appendChild(li);
 const mr=L.marker([h[3],h[4]],{icon:ic}).addTo(m);
-mr.bindPopup(`<b style="color:${h[1]==='tertiary'?'#800080':'#8b0000'}">${h[0]}</b><br>${tl} Hospital<br>📍 ${h[2]}<br>${h[5]}<br>📞 ${h[6]}`);
-mkrs.push(mr);
+const gmapsUrl=`https://www.google.com/maps/dir/?api=1&destination=${h[3]},${h[4]}`;
+mr.bindPopup(`<div class="popup-title" style="color:${h[1]==='tertiary'?'#800080':'#8b0000'}">${h[0]}</div><div class="popup-info"><span class="popup-label">Type:</span> ${tl}</div><div class="popup-info"><span class="popup-label">Region:</span> ${h[2]}</div><div class="popup-info"><span class="popup-label">Address:</span> ${h[5]}</div><div class="popup-info"><span class="popup-label">Phone:</span> <a href="tel:${h[6]}" style="color:#28a745">${h[6]}</a></div><a href="${gmapsUrl}" target="_blank" class="popup-link">🗺️ Get Directions</a>`);
+mkrs.push(mr);rc[h[2]]=(rc[h[2]]||0)+1;
 });
 V.forEach((v,i)=>{
 const idx=H.length+i;
 const li=document.createElement('li');li.className='primary';
-li.innerHTML=`<span class="vc-name">${v[0]}</span><span class="vc-details">📍 ${v[1]}</span><span class="vc-phone">📞 ${v[5]}</span>`;
+li.innerHTML=`<span class="vc-name">${v[0]}</span><span class="vc-details">📍 ${v[1]}</span>`;
 li.onclick=()=>{m.flyTo([v[2],v[3]],14);mkrs[idx].openPopup()};l.appendChild(li);
 const mr=L.marker([v[2],v[3]],{icon:pI}).addTo(m);
-mr.bindPopup(`<b style="color:#0056b3">${v[0]}</b><br>Vision Centre<br>📍 ${v[1]}<br>${v[4]}<br>📞 ${v[5]}`);
-mkrs.push(mr);
-});const s=document.getElementById('searchBox'),its=l.querySelectorAll('li');
-s.oninput=e=>{
-const t=e.target.value.toLowerCase();let c=0;
+const gmapsUrl=`https://www.google.com/maps/dir/?api=1&destination=${v[2]},${v[3]}`;
+mr.bindPopup(`<div class="popup-title" style="color:#0056b3">${v[0]}</div><div class="popup-info"><span class="popup-label">Type:</span> 🔵 Vision Centre</div><div class="popup-info"><span class="popup-label">Region:</span> ${v[1]}</div><div class="popup-info"><span class="popup-label">Address:</span> ${v[4]}</div><a href="${gmapsUrl}" target="_blank" class="popup-link">🗺️ Get Directions</a>`);
+mkrs.push(mr);rc[v[1]]=(rc[v[1]]||0)+1;
+});
+// AUTO-ZOOM ON LOAD - Show all locations
+const bounds=L.latLngBounds();
+H.forEach(h=>bounds.extend([h[3],h[4]]));
+V.forEach(v=>bounds.extend([v[2],v[3]]));
+m.fitBounds(bounds,{padding:[50,50],maxZoom:7});
+const mx=Math.max(...Object.values(rc));let fH='<option value="">🌍 All Regions</option>',cH='';
+Object.keys(rc).sort((a,b)=>rc[b]-rc[a]).forEach(r=>{
+fH+=`<option value="${r}">${r} (${rc[r]})</option>`;
+const pct=(rc[r]/mx)*100;
+cH+=`<div class="chart-bar"><div class="chart-label">${r}</div><div class="chart-track"><div class="chart-fill" style="width:${pct}%">${rc[r]}</div></div></div>`;
+});
+filter.innerHTML=fH;document.getElementById('chartContainer').innerHTML=cH;
+const s=document.getElementById('searchBox'),its=l.querySelectorAll('li');
+function applyFilters(){
+const term=s.value.toLowerCase(),reg=filter.value;
 its.forEach((it,i)=>{
-const txt=it.textContent.toLowerCase(),loc=i<H.length?H[i]:V[i-H.length];
-if(txt.includes(t)||loc[1].toLowerCase().includes(t)||loc[loc.length-1].includes(t)){it.style.display='block';mkrs[i].setOpacity(1);c++}
+const loc=i<H.length?H[i]:V[i-H.length];
+const matchText=it.textContent.toLowerCase().includes(term);
+const matchReg=!reg||loc[1]===reg;
+if(matchText&&matchReg){it.style.display='block';mkrs[i].setOpacity(1)}
 else{it.style.display='none';mkrs[i].setOpacity(0.1)}
 });
-document.getElementById('vcCount').textContent=c;
-};
-document.getElementById('showAllBtn').onclick=()=>{
-s.value='';its.forEach((it,i)=>{it.style.display='block';mkrs[i].setOpacity(1)});
-document.getElementById('vcCount').textContent=H.length+V.length;m.flyTo([27.5,79],7);
-};
-document.getElementById('vcCount').textContent=H.length+V.length;
+}
+s.oninput=applyFilters;filter.onchange=applyFilters;
+document.getElementById('showAllBtn').onclick=()=>{s.value='';filter.value='';applyFilters();m.fitBounds(bounds,{padding:[50,50],maxZoom:7})};
 });
 </script>
 </body>
