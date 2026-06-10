@@ -157,7 +157,7 @@ li.innerHTML=`<span class="vc-name">${v[0]}</span><span class="vc-details"> ${v[
 li.onclick=()=>{m.flyTo([v[2],v[3]],14);mkrs[idx].openPopup()};l.appendChild(li);
 const mr=L.marker([v[2],v[3]],{icon:pI}).addTo(m);
 const gmapsUrl=`https://www.google.com/maps/dir/?api=1&destination=${v[2]},${v[3]}`;
-mr.bindPopup(`<div class="popup-title" style="color:#0056b3">${v[0]}</div><div class="popup-info"><span class="popup-label">Type:</span> 🔵 Primary Vision Centre</div><div class="popup-info"><span class="popup-label">Region:</span> ${v[1]}</div><div class="popup-info"><span class="popup-label">Address:</span> ${v[4]}</div><a href="${gmapsUrl}" target="_blank" class="popup-link">🗺️ Get Directions</a>`);
+mr.bindPopup(`<div class="popup-title" style="color:#0056b3">${v[0]}</div><div class="popup-info"><span class="popup-label">Type:</span> 🔵 Vision Centre</div><div class="popup-info"><span class="popup-label">Region:</span> ${v[1]}</div><div class="popup-info"><span class="popup-label">Address:</span> ${v[4]}</div><a href="${gmapsUrl}" target="_blank" class="popup-link">🗺️ Get Directions</a>`);
 mkrs.push(mr);rc[v[1]]=(rc[v[1]]||0)+1;
 });
 // AUTO-ZOOM ON LOAD
