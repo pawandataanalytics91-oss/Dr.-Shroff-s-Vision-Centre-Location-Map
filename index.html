@@ -116,13 +116,29 @@ const m=L.map('map').setView([27.5,79],6);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CARTO',maxZoom:20}).addTo(m);
 const mk=(c,s)=>L.divIcon({className:'cm',html:`<svg width="${s}" height="${s}" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="${c}" stroke="#fff" stroke-width="2"/><circle cx="12" cy="9" r="3" fill="#fff"/></svg>`,iconSize:[s,s],iconAnchor:[s/2,s],popupAnchor:[0,-s]});
 const tI=mk('#800080',42),sI=mk('#8b0000',36),pI=mk('#0056b3',30);
-// Fast counter animation
-const animateCounter=(el,target)=>{el.textContent=target};
-animateCounter(document.getElementById('sTotal'),H.length+V.length);
-animateCounter(document.getElementById('sTer'),H.filter(x=>x[1]==='tertiary').length);
-animateCounter(document.getElementById('sSec'),H.filter(x=>x[1]==='secondary').length);
-animateCounter(document.getElementById('sPri'),V.length);
-const l=document.getElementById('vcList'),mkrs=[],rc={},filter=document.getElementById('regionFilter');
+// Smooth Stopwatch Counter Animation
+const animateCounter = (el, target) => {
+    let current = 0;
+    const duration = 1500; // 1.5 second mein pura count hoga
+    const steps = 50; 
+    const increment = target / steps;
+    const stepTime = duration / steps;
+
+    const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+            current = target;
+            clearInterval(timer);
+        }
+        el.textContent = Math.floor(current);
+    }, stepTime);
+};
+// Counters ko trigger karna
+animateCounter(document.getElementById('sTotal'), H.length + V.length);
+animateCounter(document.getElementById('sTer'), H.filter(x => x[1] === 'tertiary').length);
+animateCounter(document.getElementById('sSec'), H.filter(x => x[1] === 'secondary').length);
+animateCounter(document.getElementById('sPri'), V.length);
+const l = document.getElementById('vcList'), mkrs = [], rc = {}, filter = document.getElementById('regionFilter');
 H.forEach((h,i)=>{
 const ic=h[1]==='tertiary'?tI:sI,tl=h[1]==='tertiary'?'🏥 Tertiary Hospital':'🏥 Secondary Hospital';
 const li=document.createElement('li');li.className=h[1];
