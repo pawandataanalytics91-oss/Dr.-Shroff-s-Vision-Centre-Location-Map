@@ -248,7 +248,10 @@ const V=[["Mawana Vision Centre","Meerut",29.1088,77.9232,"Moh Kabli Gate Hastin
 document.addEventListener('DOMContentLoaded',()=>{
 if(typeof L==='undefined'){alert("Internet check karein");return}
 const m=L.map('map').setView([12, 79], 5);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CARTO',maxZoom:20}).addTo(m);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19
+}).addTo(m);
 const mk=(c,s)=>L.divIcon({className:'cm',html:`<svg width="${s}" height="${s}" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="${c}" stroke="#fff" stroke-width="2"/><circle cx="12" cy="9" r="3" fill="#fff"/></svg>`,iconSize:[s,s],iconAnchor:[s/2,s],popupAnchor:[0,-s]});
 const tI=mk('#800080',42),sI=mk('#8b0000',36),pI=mk('#0056b3',30);
 
