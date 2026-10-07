@@ -52,6 +52,13 @@ header h1{font-size:1.4rem;text-shadow:2px 2px 4px rgba(0,0,0,0.3)}
 .chart-track{flex:1;background:#e9ecef;height:16px;border-radius:8px;overflow:hidden;margin:0 8px}
 .chart-fill{height:100%;background:linear-gradient(90deg,#667eea,#764ba2);border-radius:8px;display:flex;align-items:center;justify-content:flex-end;padding-right:4px;color:#fff;font-weight:700;font-size:0.7rem}
 .cm{background:transparent!important;border:none!important;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.4))}
+.cm.blink{
+       animation: blinkAnim 1.5s infinite ease-in-out;
+   }
+   @keyframes blinkAnim {
+       0%, 100% { transform: scale(1); opacity: 1; }
+       50% { transform: scale(1.1); opacity: 0.7; }
+   }
 #map{width:100%;height:850px;border-radius:10px;box-shadow:0 8px 25px rgba(0,0,0,0.3);z-index:1;background:#fff;flex:none}
 .leaflet-popup-content-wrapper{border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}
 .leaflet-popup-content{margin:10px;font-size:0.85rem;line-height:1.4;max-width:250px}
@@ -255,7 +262,16 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors',
     maxZoom: 19
 }).addTo(m);
-const mk=(c,s)=>L.divIcon({className:'cm',html:`<svg width="${s}" height="${s}" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="${c}" stroke="#fff" stroke-width="2"/><circle cx="12" cy="9" r="3" fill="#fff"/></svg>`,iconSize:[s,s],iconAnchor:[s/2,s],popupAnchor:[0,-s]});
+const mk=(c,s)=>L.divIcon({
+       className:'cm blink',
+       html:`<svg width="${s}" height="${s}" viewBox="0 0 24 24">
+           <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="${c}" stroke="#fff" stroke-width="1.5"/>
+           <path d="M12 7c-2 0-3.5 1-4 2.5.5 1.5 2 2.5 4 2.5s3.5-1 4-2.5c-.5-1.5-2-2.5-4-2.5zm0 4c-.83 0-1.5-.67-1.5-1.5S11.17 8 12 8s1.5.67 1.5 1.5S12.83 11 12 11z" fill="#fff"/>
+       </svg>`,
+       iconSize:[s,s],
+       iconAnchor:[s/2,s],
+       popupAnchor:[0,-s]
+   });
 const tI=mk('#800080',42),sI=mk('#8b0000',36),pI=mk('#0056b3',30);
 
 const animateCounter = (el, target) => {
