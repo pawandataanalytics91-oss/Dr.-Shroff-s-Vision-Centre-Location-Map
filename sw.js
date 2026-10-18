@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shroff-gis-v1';
+const CACHE_NAME = 'shroff-gis-v2'; // Future mein v3, v4 karte jayein
 const urlsToCache = [
   './',
   './index.html',
@@ -6,26 +6,34 @@ const urlsToCache = [
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
 ];
 
-// Install Event
+// 1. Install Event (Naya Cache Banaye)
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
+      .then(cache => cache.addAll(urlsToCache))
   );
 });
 
-// Fetch Event (Offline support)
+// 2. Fetch Event (Offline Support)
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
-      .then(response => {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      })
+      .then(response => response || fetch(event.request))
+  );
+});
+
+// 3. Activate Event (Purana Cache Delete Kare) - Ye Naya Add Kiya Hai
+self.addEventListener('activate', event => {
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
   );
 });
