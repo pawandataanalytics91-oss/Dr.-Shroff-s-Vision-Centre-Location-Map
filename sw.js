@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shroff-gis-v5'; // Future mein v3, v4 karte jayein
+const CACHE_NAME = 'shroff-gis-v6'; // Future mein v3, v4 karte jayein
 const urlsToCache = [
   './',
   './index.html',
