@@ -12,25 +12,34 @@
 <title>Dr. Shroff's Advanced GIS Dashboard</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
-/* Splash Screen Styling */
+/* Full Screen Splash Screen Fix */
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important; /* Scroll rokne ke liye */
+}
+
 #splash-screen {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #0b1120; /* Dark Navy Blue background */
+    width: 100vw; /* Puri screen ki chaudai */
+    height: 100vh; /* Puri screen ki unchai */
+    background-color: #0b1120;
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 99999;
     transition: opacity 0.5s ease-in-out;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 #splash-screen img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover; /* Image ko puri screen par stretch/fill kar dega */
+    display: block;
 }
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif}
 body{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:15px}
