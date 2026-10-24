@@ -12,6 +12,26 @@
 <title>Dr. Shroff's Advanced GIS Dashboard</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
+/* Splash Screen Styling */
+#splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #0b1120; /* Dark Navy Blue background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    transition: opacity 0.5s ease-in-out;
+}
+
+#splash-screen img {
+    max-width: 85%;
+    max-height: 85%;
+    object-fit: contain;
+}
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif}
 body{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:15px}
 .container{max-width:1600px;margin:0 auto}
@@ -122,6 +142,11 @@ header h1{font-size:1rem}
 </style>
 </head>
 <body>
+<!-- Splash Screen Start -->
+<div id="splash-screen">
+    <img src="splash.png" alt="Loading App...">
+</div>
+<!-- Splash Screen End -->
 <div class="container">
 <header>
 <h1>🏥 Dr. Shroff's Charity Eye Hospital - Advanced GIS Dashboard</h1>
@@ -344,6 +369,19 @@ document.getElementById('showAllBtn').onclick=()=>{
         .catch(err => console.log('Service Worker Failed', err));
     });
   }
+</script>
+<script>
+// Splash Screen Hide Logic
+window.addEventListener('load', function() {
+    var splash = document.getElementById('splash-screen');
+    // 2.5 second tak splash screen dikhega, phir fade out hoga
+    setTimeout(function() {
+        splash.style.opacity = '0';
+        setTimeout(function() {
+            splash.style.display = 'none';
+        }, 500);
+    }, 2500); 
+});
 </script>
 </body>
 </html>
