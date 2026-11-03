@@ -400,16 +400,44 @@ document.getElementById('showAllBtn').onclick=()=>{
   }
 </script>
 <script>
-// Splash Screen Hide Logic
+// === SPLASH SCREEN & COUNTER ANIMATION COMBINED ===
 window.addEventListener('load', function() {
+    
+    // 1. Splash Screen Logic
     var splash = document.getElementById('splash-screen');
-    // 2.5 second tak splash screen dikhega, phir fade out hoga
     setTimeout(function() {
         splash.style.opacity = '0';
-        setTimeout(function() {
-            splash.style.display = 'none';
-        }, 500);
-    }, 2500); 
+        setTimeout(function() { splash.style.display = 'none'; }, 800);
+    }, 2500); // 2.5 second tak splash screen rahega
+
+    // 2. Counter Animation Logic (Splash screen hatne ke baad chalega)
+    setTimeout(() => {
+        const counters = document.querySelectorAll('.count-anim');
+        const duration = 1500; // 1.5 second mein counting poori hogi
+
+        counters.forEach(counter => {
+            const target = +counter.innerText; // Screen se final number uthao
+            if (target === 0 || isNaN(target)) return; // Agar number nahi hai toh skip karo
+            
+            counter.innerText = '0'; // Shuruwat 0 se karo
+            
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                
+                counter.innerText = Math.floor(progress * target);
+                
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    counter.innerText = target; // End mein exact number set karo
+                }
+            };
+            window.requestAnimationFrame(step);
+        });
+    }, 2600); // 2.6 second baad counting shuru hogi (Splash hatne ke turant baad)
+
 });
 </script>
 </body>
