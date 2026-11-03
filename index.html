@@ -5,13 +5,41 @@
 <meta name="theme-color" content="#1e3c72">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Dr. Shroff's Advanced GIS Dashboard</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
+/* === PWA SCROLL LOCK FIX (MASTER CODE) === */
+html {
+    height: auto !important;
+    overflow-y: scroll !important; /* Desktop par scrollbar dikhane ke liye */
+    overflow-x: hidden !important;
+}
+
+body {
+    height: auto !important;
+    min-height: 100vh;
+    overflow-y: auto !important; /* Scrolling enable karne ke liye */
+    overflow-x: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
+/* Agar koi container ya app wrapper scroll rok raha ho */
+.container, .app-container, main, #app {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+/* Splash screen ko hatane ke baad usko click/scroll se bachane ke liye */
+#splash-screen {
+    pointer-events: none !important; 
+}
 /* Full Screen Splash Screen Fix */
 html, body {
     margin: 0 !important;
