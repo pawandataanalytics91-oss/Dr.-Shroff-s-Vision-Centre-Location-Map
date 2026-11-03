@@ -12,47 +12,38 @@
 <title>Dr. Shroff's Advanced GIS Dashboard</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
-/* === PWA SCROLL LOCK FIX (MASTER CODE) === */
+/* === FINAL MERGED SCROLL & SPLASH FIX === */
+
+/* 1. Page Scroll Fix (Desktop & Mobile) */
 html {
     height: auto !important;
-    overflow-y: scroll !important; /* Desktop par scrollbar dikhane ke liye */
+    overflow-y: scroll !important; 
     overflow-x: hidden !important;
 }
 
 body {
     height: auto !important;
     min-height: 100vh;
-    overflow-y: auto !important; /* Scrolling enable karne ke liye */
+    overflow-y: auto !important; 
     overflow-x: hidden !important;
     margin: 0 !important;
     padding: 0 !important;
     -webkit-overflow-scrolling: touch !important;
 }
 
-/* Agar koi container ya app wrapper scroll rok raha ho */
 .container, .app-container, main, #app {
     height: auto !important;
     max-height: none !important;
     overflow: visible !important;
 }
 
-/* Splash screen ko hatane ke baad usko click/scroll se bachane ke liye */
-#splash-screen {
-    pointer-events: none !important; 
-}
-/* Full Screen Splash Screen Fix */
-html, body {
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important; /* Scroll rokne ke liye */
-}
-
+/* 2. Splash Screen Full Screen Fix */
 #splash-screen {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw; /* Puri screen ki chaudai */
-    height: 100vh; /* Puri screen ki unchai */
+    width: 100%;
+    height: 100%;
     background-color: #0b1120;
     display: flex;
     justify-content: center;
@@ -61,12 +52,13 @@ html, body {
     transition: opacity 0.5s ease-in-out;
     margin: 0 !important;
     padding: 0 !important;
+    overflow: hidden !important; /* Sirf splash ke andar scroll band rahega */
 }
 
 #splash-screen img {
-    width: 100vw;
-    height: 100vh;
-    object-fit: cover; /* Image ko puri screen par stretch/fill kar dega */
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
     display: block;
 }
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif}
