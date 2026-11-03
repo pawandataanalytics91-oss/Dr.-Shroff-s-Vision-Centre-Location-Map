@@ -12,6 +12,19 @@
 <title>Dr. Shroff's Advanced GIS Dashboard</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
+/* Desktop Page Scroll Fix */
+html, body {
+    height: auto !important;
+    min-height: 100vh;
+    overflow-y: auto !important; /* Ye desktop par page scroll enable karega */
+    overflow-x: hidden;
+}
+
+.container {
+    height: auto !important;
+    min-height: 100vh;
+    overflow-y: visible !important;
+}
 /* Full Screen Splash Screen Fix */
 html, body {
     margin: 0 !important;
