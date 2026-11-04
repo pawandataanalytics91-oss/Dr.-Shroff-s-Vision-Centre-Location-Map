@@ -433,19 +433,19 @@ document.getElementById('showAllBtn').onclick=()=>{
   }
 </script>
 <script>
-// === ULTIMATE FINAL SCRIPT (SPLASH + FAST COUNTER) ===
+// === SUPER FAST COUNTER & SPLASH ===
 window.addEventListener('load', function() {
     
-    // 1. Splash Screen Hide Logic
+    // 1. Splash Screen Hide Logic (2 second mein hat jayega)
     var splash = document.getElementById('splash-screen');
     if (splash) {
         setTimeout(function() {
             splash.style.opacity = '0';
-            setTimeout(function() { splash.style.display = 'none'; }, 800);
-        }, 2500); 
+            setTimeout(function() { splash.style.display = 'none'; }, 500);
+        }, 2000); 
     }
 
-    // 2. Counter Animation Logic (Ab bahut tez chalega)
+    // 2. Super Fast Counter Logic (Splash hatne ke turant baad start)
     setTimeout(() => {
         const counterIds = ['sTotal', 'sTer', 'sSec', 'sPri'];
         
@@ -458,8 +458,8 @@ window.addEventListener('load', function() {
                     el.innerText = '0'; 
                     
                     let current = 0;
-                    const step = Math.ceil(finalNum / 15); // 15 steps (pehle 30 the, ab aadhe)
-                    const speed = 10; // 10ms (pehle 20ms tha, ab double tez)
+                    const step = Math.ceil(finalNum / 50); // 50 steps (bahut smooth)
+                    const speed = 5; // 5ms (bijli ki tezi)
 
                     const timer = setInterval(() => {
                         current += step;
@@ -474,7 +474,7 @@ window.addEventListener('load', function() {
             }
         });
         
-    }, 3500); 
+    }, 2200); // 2.2 second baad counter start (Splash hatne ke turant baad)
 
 });
 </script>
