@@ -433,7 +433,7 @@ document.getElementById('showAllBtn').onclick=()=>{
   }
 </script>
 <script>
-// === FINAL ALL-IN-ONE SCRIPT (SPLASH HIDE + FAST COUNTER) ===
+// === FINAL PERFECT SCRIPT (SPLASH + DELAYED COUNTER) ===
 window.addEventListener('load', function() {
     
     // 1. Splash Screen Hide Logic (2.5 second baad hat jayega)
@@ -445,27 +445,28 @@ window.addEventListener('load', function() {
         }, 2500); 
     }
 
-    // 2. Fast Counter Logic (3 second baad chalega)
-    setTimeout(() => {
-        const counterIds = ['sTotal', 'sTer', 'sSec', 'sPri'];
+    // 2. Counter Logic (3.5 second wait karega taaki dashboard numbers calculate kar le)
+    setTimeout(function() {
+        var ids = ['sTotal', 'sTer', 'sSec', 'sPri'];
         
-        counterIds.forEach(id => {
-            const el = document.getElementById(id);
+        ids.forEach(function(id) {
+            var el = document.getElementById(id);
             if (el) {
-                const finalNum = parseInt(el.innerText);
+                // Final number jo dashboard ne calculate kiya hai usko pakdo
+                var finalNum = parseInt(el.innerText);
                 
                 if (finalNum > 0) {
-                    el.innerText = '0'; 
+                    el.innerText = '0'; // 0 se shuru karo
                     
-                    let current = 0;
-                    const step = Math.ceil(finalNum / 40); // Smooth steps
-                    const speed = 8; // 8ms (Bahut tez)
+                    var current = 0;
+                    var step = Math.ceil(finalNum / 40); // Smooth steps
+                    var speed = 15; // 15ms (Bahut tez bijli speed)
 
-                    const timer = setInterval(() => {
+                    var timer = setInterval(function() {
                         current += step;
                         if (current >= finalNum) {
-                            el.innerText = finalNum; 
-                            clearInterval(timer); 
+                            el.innerText = finalNum; // Final number lock karo
+                            clearInterval(timer); // Timer band karo
                         } else {
                             el.innerText = current;
                         }
@@ -474,7 +475,7 @@ window.addEventListener('load', function() {
             }
         });
         
-    }, 3000); // 3 second ka delay
+    }, 3500); // 3.5 second ka delay (Dashboard ko calculate karne ka time)
 
 });
 </script>
