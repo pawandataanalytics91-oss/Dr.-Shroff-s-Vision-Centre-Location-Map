@@ -433,54 +433,49 @@ document.getElementById('showAllBtn').onclick=()=>{
   }
 </script>
 <script>
-// === SMART COUNTER OBSERVER (Auto-Detect & Animate) ===
-document.addEventListener("DOMContentLoaded", () => {
-    const counterIds = ['sTotal', 'sTer', 'sSec', 'sPri'];
+// === ULTIMATE FINAL SCRIPT (SPLASH + FAST COUNTER) ===
+window.addEventListener('load', function() {
     
-    // Animation Function
-    const animateCounter = (el, targetValue) => {
-        let current = 0;
-        const duration = 1500; // 1.5 second mein pura count hoga
-        const frameRate = 1000 / 60; 
-        const totalFrames = Math.round(duration / frameRate);
-        const increment = targetValue / totalFrames;
-        
-        let frame = 0;
-        const timer = setInterval(() => {
-            frame++;
-            current = Math.round(increment * frame);
-            if (frame === totalFrames) {
-                clearInterval(timer);
-                current = targetValue;
-            }
-            el.innerText = current;
-        }, frameRate);
-    };
+    // 1. Splash Screen Hide Logic
+    var splash = document.getElementById('splash-screen');
+    if (splash) {
+        setTimeout(function() {
+            splash.style.opacity = '0';
+            setTimeout(function() { splash.style.display = 'none'; }, 800);
+        }, 2500); 
+    }
 
-    // Watcher Logic (Ye numbers ko observe karega)
-    const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            const el = mutation.target;
-            // Check karein ki ye hamara counter hai aur abhi animate nahi hua
-            if (el.id && counterIds.includes(el.id) && !el.classList.contains('counted')) {
-                const val = parseInt(el.innerText);
-                // Jab asli number aa jaye (0 se bada)
-                if (val > 0) {
-                    el.classList.add('counted'); // Mark kar do taaki dobara na chale
-                    el.innerText = '0'; // 0 se start karo
-                    animateCounter(el, val); // Animation shuru
+    // 2. Counter Animation Logic (Ab bahut tez chalega)
+    setTimeout(() => {
+        const counterIds = ['sTotal', 'sTer', 'sSec', 'sPri'];
+        
+        counterIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                const finalNum = parseInt(el.innerText);
+                
+                if (finalNum > 0) {
+                    el.innerText = '0'; 
+                    
+                    let current = 0;
+                    const step = Math.ceil(finalNum / 15); // 15 steps (pehle 30 the, ab aadhe)
+                    const speed = 10; // 10ms (pehle 20ms tha, ab double tez)
+
+                    const timer = setInterval(() => {
+                        current += step;
+                        if (current >= finalNum) {
+                            el.innerText = finalNum; 
+                            clearInterval(timer); 
+                        } else {
+                            el.innerText = current;
+                        }
+                    }, speed);
                 }
             }
         });
-    });
+        
+    }, 3500); 
 
-    // Sabhi counters ko watch karna shuru karo
-    counterIds.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            observer.observe(el, { childList: true, characterData: true, subtree: true });
-        }
-    });
 });
 </script>
 </body>
