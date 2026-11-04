@@ -433,49 +433,54 @@ document.getElementById('showAllBtn').onclick=()=>{
   }
 </script>
 <script>
-// === SUPER FAST COUNTER & SPLASH ===
-window.addEventListener('load', function() {
+// === SMART COUNTER OBSERVER (Auto-Detect & Animate) ===
+document.addEventListener("DOMContentLoaded", () => {
+    const counterIds = ['sTotal', 'sTer', 'sSec', 'sPri'];
     
-    // 1. Splash Screen Hide Logic (2 second mein hat jayega)
-    var splash = document.getElementById('splash-screen');
-    if (splash) {
-        setTimeout(function() {
-            splash.style.opacity = '0';
-            setTimeout(function() { splash.style.display = 'none'; }, 500);
-        }, 2000); 
-    }
-
-    // 2. Super Fast Counter Logic (Splash hatne ke turant baad start)
-    setTimeout(() => {
-        const counterIds = ['sTotal', 'sTer', 'sSec', 'sPri'];
+    // Animation Function
+    const animateCounter = (el, targetValue) => {
+        let current = 0;
+        const duration = 1500; // 1.5 second mein pura count hoga
+        const frameRate = 1000 / 60; 
+        const totalFrames = Math.round(duration / frameRate);
+        const increment = targetValue / totalFrames;
         
-        counterIds.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                const finalNum = parseInt(el.innerText);
-                
-                if (finalNum > 0) {
-                    el.innerText = '0'; 
-                    
-                    let current = 0;
-                    const step = Math.ceil(finalNum / 50); // 50 steps (bahut smooth)
-                    const speed = 5; // 5ms (bijli ki tezi)
+        let frame = 0;
+        const timer = setInterval(() => {
+            frame++;
+            current = Math.round(increment * frame);
+            if (frame === totalFrames) {
+                clearInterval(timer);
+                current = targetValue;
+            }
+            el.innerText = current;
+        }, frameRate);
+    };
 
-                    const timer = setInterval(() => {
-                        current += step;
-                        if (current >= finalNum) {
-                            el.innerText = finalNum; 
-                            clearInterval(timer); 
-                        } else {
-                            el.innerText = current;
-                        }
-                    }, speed);
+    // Watcher Logic (Ye numbers ko observe karega)
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            const el = mutation.target;
+            // Check karein ki ye hamara counter hai aur abhi animate nahi hua
+            if (el.id && counterIds.includes(el.id) && !el.classList.contains('counted')) {
+                const val = parseInt(el.innerText);
+                // Jab asli number aa jaye (0 se bada)
+                if (val > 0) {
+                    el.classList.add('counted'); // Mark kar do taaki dobara na chale
+                    el.innerText = '0'; // 0 se start karo
+                    animateCounter(el, val); // Animation shuru
                 }
             }
         });
-        
-    }, 2200); // 2.2 second baad counter start (Splash hatne ke turant baad)
+    });
 
+    // Sabhi counters ko watch karna shuru karo
+    counterIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            observer.observe(el, { childList: true, characterData: true, subtree: true });
+        }
+    });
 });
 </script>
 </body>
