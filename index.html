@@ -400,43 +400,49 @@ document.getElementById('showAllBtn').onclick=()=>{
   }
 </script>
 <script>
-// === SPLASH SCREEN & COUNTER ANIMATION COMBINED ===
+// === ULTIMATE FINAL SCRIPT (SPLASH + COUNTER) ===
 window.addEventListener('load', function() {
     
-    // 1. Splash Screen Logic
+    // 1. Splash Screen Hide Logic (2.5 second baad hat jayega)
     var splash = document.getElementById('splash-screen');
-    setTimeout(function() {
-        splash.style.opacity = '0';
-        setTimeout(function() { splash.style.display = 'none'; }, 800);
-    }, 2500); // 2.5 second tak splash screen rahega
+    if (splash) {
+        setTimeout(function() {
+            splash.style.opacity = '0';
+            setTimeout(function() { splash.style.display = 'none'; }, 800);
+        }, 2500); 
+    }
 
-    // 2. Counter Animation Logic (Splash screen hatne ke baad chalega)
+    // 2. Counter Animation Logic (3.5 second baad chalega taaki data load ho jaye)
     setTimeout(() => {
-        const counters = document.querySelectorAll('.count-anim');
-        const duration = 1500; // 1.5 second mein counting poori hogi
+        // Aapke exact HTML IDs
+        const counterIds = ['sTotal', 'sTer', 'sSec', 'sPri'];
+        
+        counterIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                const finalNum = parseInt(el.innerText);
+                
+                if (finalNum > 0) {
+                    el.innerText = '0'; // Shuruwat 0 se
+                    
+                    let current = 0;
+                    const step = Math.ceil(finalNum / 30); // 30 steps mein pura count
+                    const speed = 20; // Bahut tez speed
 
-        counters.forEach(counter => {
-            const target = +counter.innerText; // Screen se final number uthao
-            if (target === 0 || isNaN(target)) return; // Agar number nahi hai toh skip karo
-            
-            counter.innerText = '0'; // Shuruwat 0 se karo
-            
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                
-                counter.innerText = Math.floor(progress * target);
-                
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                } else {
-                    counter.innerText = target; // End mein exact number set karo
+                    const timer = setInterval(() => {
+                        current += step;
+                        if (current >= finalNum) {
+                            el.innerText = finalNum; // Final number lock karo
+                            clearInterval(timer); // Timer band karo
+                        } else {
+                            el.innerText = current;
+                        }
+                    }, speed);
                 }
-            };
-            window.requestAnimationFrame(step);
+            }
         });
-    }, 2600); // 2.6 second baad counting shuru hogi (Splash hatne ke turant baad)
+        
+    }, 3500); // 3.5 second ka delay
 
 });
 </script>
