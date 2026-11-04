@@ -400,10 +400,10 @@ document.getElementById('showAllBtn').onclick=()=>{
   }
 </script>
 <script>
-// === ULTIMATE FINAL SCRIPT (SPLASH + COUNTER) ===
+// === ULTIMATE FINAL SCRIPT (SPLASH + FAST COUNTER) ===
 window.addEventListener('load', function() {
     
-    // 1. Splash Screen Hide Logic (2.5 second baad hat jayega)
+    // 1. Splash Screen Hide Logic
     var splash = document.getElementById('splash-screen');
     if (splash) {
         setTimeout(function() {
@@ -412,9 +412,8 @@ window.addEventListener('load', function() {
         }, 2500); 
     }
 
-    // 2. Counter Animation Logic (3.5 second baad chalega taaki data load ho jaye)
+    // 2. Counter Animation Logic (Ab bahut tez chalega)
     setTimeout(() => {
-        // Aapke exact HTML IDs
         const counterIds = ['sTotal', 'sTer', 'sSec', 'sPri'];
         
         counterIds.forEach(id => {
@@ -423,17 +422,17 @@ window.addEventListener('load', function() {
                 const finalNum = parseInt(el.innerText);
                 
                 if (finalNum > 0) {
-                    el.innerText = '0'; // Shuruwat 0 se
+                    el.innerText = '0'; 
                     
                     let current = 0;
-                    const step = Math.ceil(finalNum / 30); // 30 steps mein pura count
-                    const speed = 20; // Bahut tez speed
+                    const step = Math.ceil(finalNum / 15); // 15 steps (pehle 30 the, ab aadhe)
+                    const speed = 10; // 10ms (pehle 20ms tha, ab double tez)
 
                     const timer = setInterval(() => {
                         current += step;
                         if (current >= finalNum) {
-                            el.innerText = finalNum; // Final number lock karo
-                            clearInterval(timer); // Timer band karo
+                            el.innerText = finalNum; 
+                            clearInterval(timer); 
                         } else {
                             el.innerText = current;
                         }
@@ -442,7 +441,7 @@ window.addEventListener('load', function() {
             }
         });
         
-    }, 3500); // 3.5 second ka delay
+    }, 3500); 
 
 });
 </script>
